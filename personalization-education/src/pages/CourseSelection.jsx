@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Database, Bot, Cloud, ArrowRight, Clock, Star } from "lucide-react";
 import Card from "../components/Card";
@@ -94,7 +95,7 @@ export default function CourseSelection() {
                   </div>
 
                   <Button
-                    onClick={() => navigate("/quiz")}
+                    onClick={() => navigate(`/quiz/${course.name.toLowerCase().replace(/\s+/g, '-')}`)}
                     className="w-full group-hover:shadow-lg"
                     variant="primary"
                   >

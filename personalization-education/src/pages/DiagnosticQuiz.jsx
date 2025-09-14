@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Clock, HelpCircle } from "lucide-react";
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -8,7 +8,8 @@ import Button from "../components/Button";
 export default function DiagnosticQuiz() {
   const navigate = useNavigate();
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState([]);
   const totalQuestions = 5;
 
   const questions = [
@@ -16,11 +17,56 @@ export default function DiagnosticQuiz() {
       question: "What is the time complexity of binary search?",
       options: ["O(log n)", "O(n)", "O(n log n)", "O(1)"],
       correct: "O(log n)"
+    },
+    {
+      question: "Which data structure uses LIFO (Last In, First Out) principle?",
+      options: ["Queue", "Stack", "Array", "Linked List"],
+      correct: "Stack"
+    },
+    {
+      question: "What is the worst-case time complexity of quicksort?",
+      options: ["O(n log n)", "O(n²)", "O(n)", "O(log n)"],
+      correct: "O(n²)"
+    },
+    {
+      question: "In a binary tree, what is the maximum number of nodes at level k?",
+      options: ["2^k", "2^(k-1)", "k", "2k"],
+      correct: "2^k"
+    },
+    {
+      question: "Which sorting algorithm is stable and has O(n log n) time complexity?",
+      options: ["Quick Sort", "Heap Sort", "Merge Sort", "Selection Sort"],
+      correct: "Merge Sort"
     }
   ];
 
-  const currentQ = questions[0];
-  const progress = (currentQuestion / totalQuestions) * 100;
+  const currentQ = questions[currentQuestion];
+  const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+
+  // Reset selected answer when question changes
+  useEffect(() => {
+    setSelectedAnswer(answers[currentQuestion] || null);
+  }, [currentQuestion, answers]);
+
+  const handleNext = () => {
+    // Save current answer
+    const newAnswers = [...answers];
+    newAnswers[currentQuestion] = selectedAnswer || "";
+    setAnswers(newAnswers);
+
+    if (currentQuestion < totalQuestions - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      // Quiz completed, navigate to results
+      navigate("/results");
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
+  };
 
   return (
     <div className="min-h-screen p-6">
@@ -59,7 +105,7 @@ export default function DiagnosticQuiz() {
             </div>
             <div className="flex justify-between mt-2">
               <span className="text-sm text-gray-600">
-                Question {currentQuestion} of {totalQuestions}
+                Question {currentQuestion + 1} of {totalQuestions}
               </span>
               <span className="text-sm text-gray-600">{Math.round(progress)}% Complete</span>
             </div>
@@ -71,9 +117,9 @@ export default function DiagnosticQuiz() {
               <div
                 key={i}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  i + 1 === currentQuestion
+                  i === currentQuestion
                     ? "bg-blue-500 scale-125"
-                    : i + 1 < currentQuestion
+                    : i < currentQuestion || answers[i]
                     ? "bg-emerald-500"
                     : "bg-gray-300"
                 }`}
@@ -134,7 +180,7 @@ export default function DiagnosticQuiz() {
         {/* Navigation */}
         <div className="flex justify-between items-center">
           <Button
-            onClick={() => navigate("/courses")}
+            onClick={currentQuestion === 0 ? () => navigate("/courses") : handlePrevious}
             variant="ghost"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -146,11 +192,11 @@ export default function DiagnosticQuiz() {
           </div>
 
           <Button
-            onClick={() => navigate("/preferences")}
+            onClick={handleNext}
             disabled={!selectedAnswer}
             className="min-w-[120px]"
           >
-            {currentQuestion === totalQuestions ? "Finish" : "Next"}
+            {currentQuestion === totalQuestions - 1 ? "Finish Quiz" : "Next"}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

@@ -132,12 +132,12 @@ export default function LearningPreferences() {
         <div className="flex justify-center">
           <Button
             onClick={() => navigate("/content")}
-            disabled={selectedPrefs.length === 0}
             size="lg"
             variant="secondary"
             className="min-w-[200px]"
+            disabled={selectedPrefs.length === 0}
           >
-            Continue to Content
+            Generate Personalized Content
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>

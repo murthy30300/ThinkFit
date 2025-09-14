@@ -31,7 +31,9 @@ export default function Feedback() {
   const handleSubmit = () => {
     // Handle feedback submission
     console.log({ rating, feedback, selectedTopics });
-    navigate("/");
+    // Show thank you message and redirect
+    alert("Thank you for your feedback! This helps us improve your learning experience.");
+    navigate("/courses");
   };
 
   return (
